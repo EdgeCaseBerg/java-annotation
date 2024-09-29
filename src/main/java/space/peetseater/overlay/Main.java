@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.function.Function;
 
 public class Main {
@@ -21,6 +23,7 @@ public class Main {
             jFrame.setLayout(new BorderLayout());
 
             JPanel jPanel = new JPanel(new FlowLayout());
+            jPanel.setBackground(transparent);
             jFrame.add(jPanel, BorderLayout.PAGE_END);
 
             AnnotatablePane annotatablePane = new AnnotatablePane();
@@ -29,6 +32,7 @@ public class Main {
             jFrame.add(annotatablePane);
 
             JButton close = new JButton("X");
+            close.setMnemonic('x');
             jPanel.add(close);
             close.addActionListener(new ActionListener() {
                 @Override
@@ -45,6 +49,7 @@ public class Main {
                     annotatablePane.repaint();
                 }
             });
+            clear.setMnemonic('c');
             jPanel.add(clear);
 
             Function<JButton, ActionListener> colorSetter = (JButton button) -> new ActionListener() {
@@ -58,16 +63,19 @@ public class Main {
             JButton red = new JButton("      ");
             red.setBackground(Color.RED);
             red.addActionListener(colorSetter.apply(red));
+            red.setMnemonic('r');
             jPanel.add(red);
 
             JButton cyan = new JButton("      ");
             cyan.setBackground(Color.CYAN);
             cyan.addActionListener(colorSetter.apply(cyan));
+            cyan.setMnemonic('b');
             jPanel.add(cyan);
 
             JButton yellow = new JButton("      ");
             yellow.setBackground(Color.YELLOW);
             yellow.addActionListener(colorSetter.apply(yellow));
+            yellow.setMnemonic('y');
             jPanel.add(yellow);
 
             jFrame.pack();
