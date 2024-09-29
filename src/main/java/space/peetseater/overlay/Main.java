@@ -60,10 +60,10 @@ public class Main {
             red.addActionListener(colorSetter.apply(red));
             jPanel.add(red);
 
-            JButton blue = new JButton("      ");
-            blue.setBackground(Color.BLUE);
-            blue.addActionListener(colorSetter.apply(blue));
-            jPanel.add(blue);
+            JButton cyan = new JButton("      ");
+            cyan.setBackground(Color.CYAN);
+            cyan.addActionListener(colorSetter.apply(cyan));
+            jPanel.add(cyan);
 
             JButton yellow = new JButton("      ");
             yellow.setBackground(Color.YELLOW);
