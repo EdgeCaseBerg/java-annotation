@@ -55,7 +55,6 @@ public class Main {
             Function<JButton, ActionListener> colorSetter = (JButton button) -> new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("SET COLOR " + button.getBackground());
                     annotatablePane.setAnnotationColor(button.getBackground());
                 }
             };
