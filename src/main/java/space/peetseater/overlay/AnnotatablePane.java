@@ -2,7 +2,6 @@ package space.peetseater.overlay;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -11,13 +10,53 @@ import java.util.LinkedList;
 
 public class AnnotatablePane extends JPanel implements MouseMotionListener, MouseListener {
 
+    private final LinkedList<AnnotationLine> lines;
 
-    private LinkedList<Point> points;
+    class AnnotationLine {
+        private final Color color;
+        private final LinkedList<Point> points;
+        public AnnotationLine(Color color) {
+            this.color = color;
+            points =new LinkedList<>();
+        }
+
+        public void drawLine(Graphics2D graphics2D) {
+            graphics2D.setColor(color);
+            graphics2D.setStroke(new BasicStroke(5));
+            Iterator<Point> iter = points.iterator();
+            Point first = null;
+            Point second = null;
+            if (iter.hasNext()) {
+                first = iter.next();
+            }
+            while(iter.hasNext()) {
+                second = iter.next();
+                if (second != null) {
+                    graphics2D.drawLine(first.x, first.y, second.x, second.y);
+                }
+                first = second;
+            }
+        }
+
+        public void clear() {
+            points.clear();
+        }
+
+        public void add(Point point) {
+            points.add(point);
+        }
+
+        @Override
+        public String toString() {
+            return "C:%s, P size:%d".formatted(color, points.size());
+        }
+    }
     boolean shouldClear = false;
     private boolean shouldAdd;
+    private Color annotationColor;
 
     public AnnotatablePane() {
-        points = new LinkedList<Point>();
+        lines = new LinkedList<AnnotationLine>();
         addMouseListener(this);
         addMouseMotionListener(this);
         shouldAdd = false;
@@ -34,30 +73,25 @@ public class AnnotatablePane extends JPanel implements MouseMotionListener, Mous
         Graphics2D graphics2D = (Graphics2D) g.create();
         if (shouldClear) {
             shouldClear = false;
-            points.clear();
-        }
-        Iterator<Point> iter = points.iterator();
-        Point first = null;
-        Point second = null;
-        if (iter.hasNext()) {
-            first = iter.next();
-        }
-        while(iter.hasNext()) {
-            second = iter.next();
-            if (second != null) {
-                graphics2D.setColor(Color.RED);
-                graphics2D.setStroke(new BasicStroke(5));
-                graphics2D.drawLine(first.x, first.y, second.x, second.y);
+            for (AnnotationLine line : lines) {
+                line.clear();
             }
-            first = second;
+        }
+
+        for (AnnotationLine line : lines) {
+            line.drawLine(graphics2D);
         }
         graphics2D.setColor(getBackground());
         graphics2D.dispose();
     }
 
     public void addPointToDraw(Point point) {
-        points.add(point);
+        lines.getLast().add(point);
         repaint();
+    }
+
+    private void newLine() {
+        lines.add(new AnnotationLine(new Color(annotationColor.getRGB())));
     }
 
     @Override
@@ -67,24 +101,27 @@ public class AnnotatablePane extends JPanel implements MouseMotionListener, Mous
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (shouldAdd) {
+        if (shouldAdd && e.getButton() == MouseEvent.BUTTON1) {
             addPointToDraw(e.getPoint());
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            addPointToDraw(e.getPoint());
-        } else if (e.getButton() == MouseEvent.BUTTON3) {
-            shouldClear = true;
-            repaint();
-        }
-        shouldAdd = false;
+        // dont use this. mousePressed is going to fire first and mouse click is not fired during mouse drag
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            shouldAdd = true;
+            newLine();
+            addPointToDraw(e.getPoint());
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            shouldClear = true;
+            repaint();
+            shouldAdd = false;
+        }
     }
 
     @Override
@@ -94,7 +131,6 @@ public class AnnotatablePane extends JPanel implements MouseMotionListener, Mous
             shouldClear = true;
             repaint();
         }
-
     }
 
     @Override
@@ -105,5 +141,9 @@ public class AnnotatablePane extends JPanel implements MouseMotionListener, Mous
     @Override
     public void mouseExited(MouseEvent e) {
         shouldAdd = false;
+    }
+
+    public void setAnnotationColor(Color color) {
+        this.annotationColor = color;
     }
 }
