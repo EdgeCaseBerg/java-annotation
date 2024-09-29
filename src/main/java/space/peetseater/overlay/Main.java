@@ -16,8 +16,7 @@ public class Main {
             Color transparent = new Color(1f, 1f, 1f, 1/255.0f);
             jFrame.getContentPane().setBackground(transparent);
             jFrame.setBackground(transparent);
-            jFrame.setPreferredSize(new Dimension(1080, 720));
-            jFrame.setAlwaysOnTop(true);
+            jFrame.setPreferredSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getSize());
             jFrame.setVisible(true);
             jFrame.setLayout(new BorderLayout());
 
