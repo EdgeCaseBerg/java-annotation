@@ -65,6 +65,11 @@ public class Main {
             blue.addActionListener(colorSetter.apply(blue));
             jPanel.add(blue);
 
+            JButton yellow = new JButton("      ");
+            yellow.setBackground(Color.YELLOW);
+            yellow.addActionListener(colorSetter.apply(yellow));
+            jPanel.add(yellow);
+
             jFrame.pack();
         });
     }
