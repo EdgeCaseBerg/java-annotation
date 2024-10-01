@@ -10,103 +10,100 @@ import java.util.LinkedList;
 public class AnnotatablePane extends JPanel implements MouseMotionListener, MouseListener {
 
     private final LinkedList<AnnotationLine> lines;
-    boolean shouldClear = false;
-    private boolean shouldAdd;
-    private Color annotationColor;
+    private Color nextLineColor;
+    private boolean clearFlag;
+    private boolean startNewLine;
+    private int lineSize;
 
     public AnnotatablePane() {
-        lines = new LinkedList<AnnotationLine>();
-        addMouseListener(this);
+        lines = new LinkedList<>();
+        lineSize = 5;
         addMouseMotionListener(this);
-        shouldAdd = false;
-        setOpaque(false); //important or else panel gains color over time
-    }
-
-    public void setClearFlag(boolean flag) {
-        this.shouldClear = flag;
+        addMouseListener(this);
+        setOpaque(false);
+        clearFlag = false;
+        nextLineColor = Color.RED;
+        startNewLine = true;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D graphics2D = (Graphics2D) g.create();
-        if (shouldClear) {
-            shouldClear = false;
-            for (AnnotationLine line : lines) {
-                line.clear();
-            }
+
+        if (clearFlag) {
+            clearFlag = false;
+            lines.clear();
         }
 
         for (AnnotationLine line : lines) {
             line.drawLine(graphics2D);
         }
+
         graphics2D.setColor(getBackground());
         graphics2D.dispose();
     }
 
-    public void addPointToDraw(Point point) {
-        lines.getLast().addPoint(point);
-        repaint();
-    }
-
     private void newLine() {
-        lines.add(
-                new AnnotationLine(
-                    new Color(annotationColor.getRGB()), 5
-                )
-        );
+        lines.add(new AnnotationLine(nextLineColor, lineSize));
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        addPointToDraw(e.getPoint());
+        if (lines.isEmpty()) {
+            newLine();
+        }
+        if (startNewLine) {
+            startNewLine = false;
+            newLine();
+        }
+        lines.getLast().addPoint(e.getPoint());
+        repaint();
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (shouldAdd && e.getButton() == MouseEvent.BUTTON1) {
-            addPointToDraw(e.getPoint());
-        }
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        // dont use this. mousePressed is going to fire first and mouse click is not fired during mouse drag
+    public void setClearFlag(boolean flag) {
+        this.clearFlag = flag;
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            shouldAdd = true;
-            newLine();
-            addPointToDraw(e.getPoint());
-        } else if (e.getButton() == MouseEvent.BUTTON3) {
-            shouldClear = true;
+        if (MouseEvent.BUTTON3 == e.getButton()) {
+            this.clearFlag = true;
             repaint();
-            shouldAdd = false;
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        shouldAdd = false;
-        if (e.getButton() == MouseEvent.BUTTON3) {
-            shouldClear = true;
-            repaint();
-        }
+        startNewLine = true;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        shouldAdd = false;
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        shouldAdd = false;
+
+    }
+
+    public void increaseLineSize() {
+        lineSize++;
+    }
+
+    public void decreaseLineSize() {
+        lineSize = Math.max(0, lineSize - 1);
     }
 
     public void setAnnotationColor(Color color) {
-        this.annotationColor = color;
+        this.nextLineColor = color;
     }
 }
