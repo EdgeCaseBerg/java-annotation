@@ -5,52 +5,11 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class AnnotatablePane extends JPanel implements MouseMotionListener, MouseListener {
 
     private final LinkedList<AnnotationLine> lines;
-
-    class AnnotationLine {
-        private final Color color;
-        private final LinkedList<Point> points;
-        public AnnotationLine(Color color) {
-            this.color = color;
-            points =new LinkedList<>();
-        }
-
-        public void drawLine(Graphics2D graphics2D) {
-            graphics2D.setColor(color);
-            graphics2D.setStroke(new BasicStroke(5));
-            Iterator<Point> iter = points.iterator();
-            Point first = null;
-            Point second = null;
-            if (iter.hasNext()) {
-                first = iter.next();
-            }
-            while(iter.hasNext()) {
-                second = iter.next();
-                if (second != null) {
-                    graphics2D.drawLine(first.x, first.y, second.x, second.y);
-                }
-                first = second;
-            }
-        }
-
-        public void clear() {
-            points.clear();
-        }
-
-        public void add(Point point) {
-            points.add(point);
-        }
-
-        @Override
-        public String toString() {
-            return "C:%s, P size:%d".formatted(color, points.size());
-        }
-    }
     boolean shouldClear = false;
     private boolean shouldAdd;
     private Color annotationColor;
@@ -86,12 +45,16 @@ public class AnnotatablePane extends JPanel implements MouseMotionListener, Mous
     }
 
     public void addPointToDraw(Point point) {
-        lines.getLast().add(point);
+        lines.getLast().addPoint(point);
         repaint();
     }
 
     private void newLine() {
-        lines.add(new AnnotationLine(new Color(annotationColor.getRGB())));
+        lines.add(
+                new AnnotationLine(
+                    new Color(annotationColor.getRGB()), 5
+                )
+        );
     }
 
     @Override
