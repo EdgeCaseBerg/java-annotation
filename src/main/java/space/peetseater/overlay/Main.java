@@ -39,6 +39,7 @@ public class Main {
                 }
             });
             bindKey(jPanel, "CLOSE", close, KeyEvent.VK_ESCAPE);
+            bindKey(jPanel, "CLOSE", close, KeyEvent.VK_X);
 
             JButton clear = new JButton("Clear");
             clear.addActionListener(new ActionListener() {
