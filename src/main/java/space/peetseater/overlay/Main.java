@@ -38,6 +38,7 @@ public class Main {
                     System.exit(0);
                 }
             });
+            bindKey(jPanel, "CLOSE", close, KeyEvent.VK_ESCAPE);
 
             JButton clear = new JButton("Clear");
             clear.addActionListener(new ActionListener() {
@@ -49,6 +50,7 @@ public class Main {
             });
             clear.setMnemonic('c');
             jPanel.add(clear);
+            bindKey(jPanel, "CLEAR", clear, KeyEvent.VK_C);
 
             ActionListener setAnnotationLineColorCommand = new ActionListener() {
                 @Override
@@ -60,23 +62,26 @@ public class Main {
             };
 
             // TODO swap to a loop like we did on stream
-            JButton red = new JButton("      ");
+            JButton red = new JButton("   r   ");
             red.setBackground(Color.RED);
             red.addActionListener(setAnnotationLineColorCommand);
             red.setMnemonic('r');
             jPanel.add(red);
+            bindKey(jPanel, "SET_ANNOTATION_COLOR_RED", red, KeyEvent.VK_R);
 
-            JButton cyan = new JButton("      ");
+            JButton cyan = new JButton("   b   ");
             cyan.setBackground(Color.CYAN);
             cyan.addActionListener(setAnnotationLineColorCommand);
             cyan.setMnemonic('b');
             jPanel.add(cyan);
+            bindKey(jPanel, "SET_ANNOTATION_COLOR_BLUE", cyan, KeyEvent.VK_B);
 
-            JButton yellow = new JButton("      ");
+            JButton yellow = new JButton("   y   ");
             yellow.setBackground(Color.YELLOW);
             yellow.addActionListener(setAnnotationLineColorCommand);
             yellow.setMnemonic('y');
             jPanel.add(yellow);
+            bindKey(jPanel, "SET_ANNOTATION_COLOR_YELLOW", yellow, KeyEvent.VK_Y);
 
             JButton decreaseLineSize = new JButton("-");
             decreaseLineSize.addActionListener((event) -> {
@@ -84,6 +89,7 @@ public class Main {
             });
             decreaseLineSize.setMnemonic(KeyEvent.getExtendedKeyCodeForChar('-'));
             jPanel.add(decreaseLineSize);
+            bindKey(jPanel, "DECREASE_LINE_SIZE", decreaseLineSize, KeyEvent.VK_MINUS);
 
             JButton increaseLineSize = new JButton("+");
             increaseLineSize.addActionListener((event) -> {
@@ -92,9 +98,19 @@ public class Main {
             // = to avoid pressing shift to get to +
             increaseLineSize.setMnemonic(KeyEvent.getExtendedKeyCodeForChar('='));
             jPanel.add(increaseLineSize);
-
+            bindKey(jPanel, "INCREASE_LINE_SIZE", increaseLineSize, KeyEvent.VK_EQUALS);
 
             jFrame.pack();
+        });
+    }
+
+    private static void bindKey(JPanel jPanel, String bindingKey, JButton jButton, int keyEvent) {
+        jPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keyEvent, 0), bindingKey);
+        jPanel.getActionMap().put(bindingKey, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton.doClick();
+            }
         });
     }
 }
